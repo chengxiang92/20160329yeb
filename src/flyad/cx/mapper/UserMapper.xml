@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="flyad.cx.mapper.UserMapper">
+
+	<resultMap id="userMap" type="flyad.cx.entity.User">
+		<result property="id" 			column="ID" />
+		<result property="yebId" 		column="YEB_ID" 		jdbcType="VARCHAR"/>
+		<result property="yebName" 		column="YEB_NAME" 		jdbcType="VARCHAR"/>
+		<result property="cipher" 		column="CIPHER" 		jdbcType="VARCHAR"/>
+		<result property="scoreId" 		column="SCORE_ID" 		jdbcType="VARCHAR"/>
+		<result property="createDate" 	column="CREATE_DATE" 	jdbcType="TIMESTAMP"/>
+	</resultMap>
+
+	<sql id="tableName">T_USER</sql>
+
+	<insert id="addUser" parameterType="flyad.cx.entity.User"> 
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">  
+        	SELECT LAST_INSERT_ID() AS ID
+	    </selectKey> 
+		INSERT INTO <include refid="tableName"/>
+			(YEB_ID, YEB_NAME, CIPHER, SCORE_ID, CREATE_DATE)
+		VALUE
+			(#{yebId},#{yebName}, #{cipher}, #{scoreId}, #{createDate})
+	</insert>
+
+
+	<select id="getAllUser" resultMap="userMap">
+		SELECT id,name
+		FROM <include refid="tableName"/>;
+	</select>
+
+	<select id="getUserById" parameterType="String" resultMap="userMap">
+		SELECT id, username,password
+		FROM <include refid="tableName"/> where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="string">
+		DELETE FROM
+		user_table
+		WHERE ID = #{id}
+	</delete>
+
+	<update id="update" parameterType="flyad.cx.entity.User">
+		UPDATE <include refid="tableName"/>
+		<set>
+			<if test="userName != null ">userName = #{userName},</if>
+			<if test="password != null ">password = #{password}</if>
+		</set>
+		WHERE ID = #{id}
+	</update>
+
+</mapper>
